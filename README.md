@@ -162,12 +162,7 @@ Here is the operational blueprint of active hardware platforms and software ecos
           <img src="https://img.shields.io/badge/InfluxDB-22ADF6?style=flat-square&logo=influxdb" alt="InfluxDB" />
           <img src="https://img.shields.io/badge/OpenCV-5C3EE8?style=flat-square&logo=opencv" alt="OpenCV" />
         </p>
-        <!-- Simulation/Twin Mockup (Unsplash curated, 16:9 ratio, styled border) -->
-        <p align="center">
-          <a href="https://github.com/StarDust-Git-Code/road-rever">
-            <img src="https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?auto=format&fit=crop&w=420&q=80" alt="Road Rever Virtual Twin Simulation" width="95%" style="border-radius: 6px; border: 1.5px solid #1f242c; box-shadow: 0px 4px 15px rgba(0,229,255,0.15);" />
-          </a>
-        </p>
+
         <div align="center">
           <code><a href="https://github.com/StarDust-Git-Code/road-rever">⚙️ SOURCE CODE</a></code> │ <code><a href="#readme">📹 DEMO VIDEO</a></code>
         </div>
@@ -187,12 +182,7 @@ Here is the operational blueprint of active hardware platforms and software ecos
           <img src="https://img.shields.io/badge/Raspberry_Pi-A22846?style=flat-square&logo=raspberry-pi" alt="Raspberry Pi" />
           <img src="https://img.shields.io/badge/TFLite-FF6F00?style=flat-square&logo=tensorflow" alt="TensorFlow" />
         </p>
-        <!-- Robotics Mobile Platform (Unsplash curated, 16:9 ratio, styled border) -->
-        <p align="center">
-          <a href="https://github.com/StarDust-Git-Code/ros2-rover">
-            <img src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=420&q=80" alt="Autonomous ROS2 Rover Assembly" width="95%" style="border-radius: 6px; border: 1.5px solid #1f242c; box-shadow: 0px 4px 15px rgba(157,0,255,0.15);" />
-          </a>
-        </p>
+
         <div align="center">
           <code><a href="https://github.com/StarDust-Git-Code/ros2-rover">⚙️ SOURCE CODE</a></code> │ <code><a href="#readme">📹 FLIGHT WALKTHROUGH</a></code>
         </div>
@@ -219,12 +209,7 @@ Here is the operational blueprint of active hardware platforms and software ecos
           <img src="https://img.shields.io/badge/FreeRTOS-008080?style=flat-square&logo=freertos" alt="FreeRTOS" />
           <img src="https://img.shields.io/badge/MQTT-3C525C?style=flat-square&logo=mqtt" alt="MQTT" />
         </p>
-        <!-- IoT Hardware / Electronics (Unsplash curated, 16:9 ratio, styled border) -->
-        <p align="center">
-          <a href="https://github.com/StarDust-Git-Code/smart-road-node">
-            <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=420&q=80" alt="Smart Road Node PCB Prototype" width="95%" style="border-radius: 6px; border: 1.5px solid #1f242c; box-shadow: 0px 4px 15px rgba(0,229,255,0.15);" />
-          </a>
-        </p>
+
         <div align="center">
           <code><a href="https://github.com/StarDust-Git-Code/smart-road-node">⚙️ SOURCE CODE</a></code> │ <code><a href="#readme">📐 SCHEMATIC PDF</a></code>
         </div>
@@ -244,12 +229,7 @@ Here is the operational blueprint of active hardware platforms and software ecos
           <img src="https://img.shields.io/badge/WebSockets-010101?style=flat-square" alt="WebSockets" />
           <img src="https://img.shields.io/badge/Asyncio-3776AB?style=flat-square&logo=python" alt="Asyncio" />
         </p>
-        <!-- Discord UI Interface Mockup (Unsplash curated, 16:9 ratio, styled border) -->
-        <p align="center">
-          <a href="https://github.com/StarDust-Git-Code/open-claw">
-            <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=420&q=80" alt="Open Claw Architecture" width="95%" style="border-radius: 6px; border: 1.5px solid #1f242c; box-shadow: 0px 4px 15px rgba(255,0,127,0.15);" />
-          </a>
-        </p>
+
         <div align="center">
           <code><a href="https://github.com/StarDust-Git-Code/open-claw">⚙️ SOURCE CODE</a></code> │ <code><a href="#readme">📖 DOCUMENTATION</a></code>
         </div>
