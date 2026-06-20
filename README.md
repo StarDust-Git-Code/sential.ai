@@ -4,6 +4,15 @@
 
 SentinelAI is a revolutionary security auditing tool that bridges the gap between traditional Static Application Security Testing (SAST) and human-level security reviews. By leveraging Large Language Models (LLMs) and Retrieval-Augmented Generation (RAG), SentinelAI builds a deep, semantic understanding of your entire repository to find complex business-logic flaws, authorization bypasses, and security vulnerabilities that legacy scanners completely miss.
 
+## 🏆 Built for MLH Gemini.exe 2.0 Hackathon
+
+**SentinelAI is our proud submission for the Google x MLH Gemini.exe 2.0 Hackathon!** 
+
+This project was built from the ground up to showcase the power of the Gemini API in complex reasoning tasks. Here is exactly how Gemini powers SentinelAI:
+1. **Semantic Code Search**: We use Gemini's powerful embedding models to tokenize and vectorize entire repositories, allowing our local ChromaDB instance to understand the *meaning* of your code, not just the syntax.
+2. **Deep Security Reasoning**: We leverage Gemini's massive context window and advanced logic capabilities to power our Multi-Agent security engine. Gemini doesn't just read code—it cross-references multiple files to find chained vulnerabilities, authorization bypasses, and business-logic flaws that regular pattern-matching scanners miss.
+3. **Automated Remediation**: Gemini doesn't just point out errors; it generates highly accurate, standard `.patch` files to automatically fix the vulnerabilities it finds.
+
 ---
 
 ## 📑 Table of Contents
