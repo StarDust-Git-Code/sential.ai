@@ -8,10 +8,13 @@ SentinelAI is a revolutionary security auditing tool that bridges the gap betwee
 
 **SentinelAI is our proud submission for the Google x MLH Gemini.exe 2.0 Hackathon!** 
 
-This project was built from the ground up to showcase the power of the Gemini API in complex reasoning tasks. Here is exactly how Gemini powers SentinelAI:
+### Track: AI Agents | Problem Statement: #4 (Code Review Crew)
+SentinelAI perfectly aligns with the official **Code Review Crew** problem statement. It operates as a multi-agent code review platform featuring specialized, context-aware LLM agents dedicated to deep security analysis, vulnerability detection, and automated patch generation (remediation).
+
+This project was built from the ground up to showcase the power of the Gemini API in complex reasoning tasks:
 1. **Semantic Code Search**: We use Gemini's powerful embedding models to tokenize and vectorize entire repositories, allowing our local ChromaDB instance to understand the *meaning* of your code, not just the syntax.
-2. **Deep Security Reasoning**: We leverage Gemini's massive context window and advanced logic capabilities to power our Multi-Agent security engine. Gemini doesn't just read code—it cross-references multiple files to find chained vulnerabilities, authorization bypasses, and business-logic flaws that regular pattern-matching scanners miss.
-3. **Automated Remediation**: Gemini doesn't just point out errors; it generates highly accurate, standard `.patch` files to automatically fix the vulnerabilities it finds.
+2. **Deep Security Reasoning (Multi-Agent Engine)**: We leverage Gemini's massive context window and advanced logic capabilities to power our Multi-Agent security engine. Instead of one monolithic prompt, Gemini powers distinct agents that cross-reference multiple files to find chained vulnerabilities, authorization bypasses, and business-logic flaws that regular pattern-matching scanners miss.
+3. **Automated Remediation Agent**: Gemini doesn't just point out errors; our specialized patching agent generates highly accurate, standard `.patch` files to automatically fix the vulnerabilities it finds.
 
 ---
 
