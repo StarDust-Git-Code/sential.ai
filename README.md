@@ -29,6 +29,12 @@ This project was built from the ground up to showcase the power of the Gemini AP
 - [Comprehensive Usage Guide](#-comprehensive-usage-guide)
 - [Data Privacy & Security](#-data-privacy--security)
 
+## 🎥 Project Demo Video
+
+Click the image below to watch our full project demonstration:
+
+[![SentinelAI Demo Video](https://img.youtube.com/vi/Ab5wGjPtgdM/maxresdefault.jpg)](https://youtu.be/Ab5wGjPtgdM "Watch the SentinelAI Demo Video")
+
 ---
 
 ## 🛑 The Problem with Legacy Scanners
