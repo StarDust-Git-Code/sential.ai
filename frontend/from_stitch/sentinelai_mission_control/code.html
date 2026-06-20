@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SentinelAI Audit Dashboard</title>
+<!-- Google Fonts: Inter & JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed-variant": "#5516be",
+                        "on-surface": "#d3e4fe",
+                        "error": "#ffb4ab",
+                        "primary-fixed-dim": "#4edea3",
+                        "primary": "#4edea3",
+                        "inverse-on-surface": "#213145",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "secondary-container": "#0566d9",
+                        "on-secondary-fixed-variant": "#004395",
+                        "surface-variant": "#26364a",
+                        "surface-dim": "#031427",
+                        "on-background": "#d3e4fe",
+                        "on-tertiary-container": "#4600a7",
+                        "surface-container-highest": "#26364a",
+                        "secondary-fixed": "#d8e2ff",
+                        "on-tertiary": "#3c0091",
+                        "tertiary-fixed-dim": "#d0bcff",
+                        "on-primary-fixed-variant": "#005236",
+                        "surface-container-low": "#0b1c30",
+                        "on-secondary": "#002e6a",
+                        "on-primary-fixed": "#002113",
+                        "secondary": "#adc6ff",
+                        "on-tertiary-fixed": "#23005c",
+                        "on-primary-container": "#00422b",
+                        "tertiary-fixed": "#e9ddff",
+                        "on-secondary-container": "#e6ecff",
+                        "error-container": "#93000a",
+                        "on-error-container": "#ffdad6",
+                        "primary-fixed": "#6ffbbe",
+                        "on-primary": "#003824",
+                        "outline-variant": "#3c4a42",
+                        "tertiary-container": "#b090ff",
+                        "surface-bright": "#2a3a4f",
+                        "inverse-primary": "#006c49",
+                        "outline": "#86948a",
+                        "on-surface-variant": "#bbcabf",
+                        "surface-tint": "#4edea3",
+                        "surface-container-high": "#1b2b3f",
+                        "background": "#031427",
+                        "primary-container": "#10b981",
+                        "surface-container-lowest": "#000f21",
+                        "tertiary": "#d0bcff",
+                        "surface-container": "#102034",
+                        "on-secondary-fixed": "#001a42",
+                        "surface": "#031427",
+                        "inverse-surface": "#d3e4fe",
+                        "on-error": "#690005"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "stack-md": "16px",
+                        "max-width": "1440px",
+                        "gutter": "16px",
+                        "stack-lg": "32px",
+                        "container-margin": "24px",
+                        "stack-sm": "8px",
+                        "unit": "4px"
+                    },
+                    "fontFamily": {
+                        "label-caps": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "code-md": ["JetBrains Mono"],
+                        "headline-lg": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "code-sm": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "code-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "code-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Custom scrollbar for deep panels */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(3, 20, 39, 0.5); /* surface color */
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(134, 148, 138, 0.3); /* outline color */
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(78, 222, 163, 0.5); /* primary color */
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md h-screen overflow-hidden flex flex-col selection:bg-primary/30 selection:text-primary">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-gutter py-unit max-w-max-width mx-auto bg-surface/60 backdrop-blur-xl dark:bg-surface/60 border-b border-white/10 shadow-sm h-[64px]">
+<!-- Brand -->
+<div class="flex items-center gap-4">
+<div class="font-headline-md text-headline-md font-bold text-primary dark:text-primary tracking-tight flex items-center gap-2">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">shield</span>
+                SentinelAI
+            </div>
+<!-- Injected Target URL display inside Nav -->
+<div class="hidden md:flex items-center gap-2 bg-surface-container-highest/50 border border-outline-variant rounded-lg px-3 py-1.5 ml-4">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">my_location</span>
+<span class="font-code-sm text-code-sm text-on-surface opacity-80">TARGET:</span>
+<span class="font-code-sm text-code-sm text-primary tracking-wide">https://api.internal-vault.io/v2</span>
+<div class="w-2 h-2 rounded-full bg-primary ml-2 animate-pulse shadow-[0_0_8px_rgba(78,222,163,0.8)]"></div>
+</div>
+</div>
+<!-- Trailing Actions -->
+<div class="flex items-center gap-2">
+<button aria-label="settings" class="p-2 rounded-full text-on-surface-variant hover:bg-white/5 transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+</header>
+<!-- Main Workspace Area -->
+<main class="flex-1 w-full max-w-max-width mx-auto px-gutter pt-[80px] pb-[90px] grid grid-cols-1 lg:grid-cols-12 gap-gutter h-full overflow-hidden">
+<!-- Left Column: Stepper & Thoughts (Col Span 3) -->
+<aside class="hidden lg:flex flex-col col-span-3 gap-gutter h-full overflow-hidden">
+<!-- Stepper Panel -->
+<div class="bg-surface-container-high/60 backdrop-blur-md border border-white/10 rounded-xl p-5 flex flex-col gap-4 flex-shrink-0 shadow-lg">
+<h3 class="font-headline-md text-headline-md-mobile text-on-surface">Audit Phases</h3>
+<div class="flex flex-col relative pl-4 mt-2">
+<!-- Vertical Line -->
+<div class="absolute left-[27px] top-4 bottom-8 w-[2px] bg-outline-variant"></div>
+<!-- Step 1: Done -->
+<div class="flex items-start gap-4 mb-6 relative z-10">
+<div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center border-2 border-surface shrink-0 shadow-[0_0_10px_rgba(78,222,163,0.5)]">
+<span class="material-symbols-outlined text-[14px] text-on-primary font-bold">check</span>
+</div>
+<div class="flex flex-col mt-0.5">
+<span class="font-label-caps text-label-caps text-primary uppercase">Phase 1</span>
+<span class="font-body-md text-code-sm text-on-surface-variant">Reconnaissance &amp; Footprinting</span>
+</div>
+</div>
+<!-- Step 2: Done -->
+<div class="flex items-start gap-4 mb-6 relative z-10">
+<div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center border-2 border-surface shrink-0 shadow-[0_0_10px_rgba(78,222,163,0.5)]">
+<span class="material-symbols-outlined text-[14px] text-on-primary font-bold">check</span>
+</div>
+<div class="flex flex-col mt-0.5">
+<span class="font-label-caps text-label-caps text-primary uppercase">Phase 2</span>
+<span class="font-body-md text-code-sm text-on-surface-variant">Authentication Bypass</span>
+</div>
+</div>
+<!-- Step 3: Running -->
+<div class="flex items-start gap-4 mb-6 relative z-10">
+<div class="w-6 h-6 rounded-full bg-secondary container flex items-center justify-center border-2 border-surface shrink-0 shadow-[0_0_15px_rgba(5,102,217,0.8)] animate-pulse">
+<span class="material-symbols-outlined text-[14px] text-white">sync</span>
+</div>
+<div class="flex flex-col mt-0.5">
+<span class="font-label-caps text-label-caps text-secondary uppercase">Phase 3</span>
+<span class="font-body-md text-code-sm text-on-surface font-medium">Endpoint Fuzzing</span>
+<span class="font-code-sm text-[10px] text-secondary mt-1">Injecting payloads (45%)...</span>
+</div>
+</div>
+<!-- Step 4: Pending -->
+<div class="flex items-start gap-4 mb-6 relative z-10 opacity-50">
+<div class="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center border-2 border-outline-variant shrink-0">
+<span class="material-symbols-outlined text-[14px] text-on-surface-variant">more_horiz</span>
+</div>
+<div class="flex flex-col mt-0.5">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Phase 4</span>
+<span class="font-body-md text-code-sm text-on-surface-variant">Data Exfiltration Test</span>
+</div>
+</div>
+<!-- Step 5: Pending -->
+<div class="flex items-start gap-4 mb-6 relative z-10 opacity-50">
+<div class="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center border-2 border-outline-variant shrink-0">
+<span class="material-symbols-outlined text-[14px] text-on-surface-variant">more_horiz</span>
+</div>
+<div class="flex flex-col mt-0.5">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Phase 5</span>
+<span class="font-body-md text-code-sm text-on-surface-variant">Privilege Escalation</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Agent Thoughts Panel -->
+<div class="bg-surface-container-low/80 backdrop-blur-xl border border-outline-variant/50 rounded-xl p-5 flex flex-col flex-1 shadow-lg overflow-hidden relative">
+<!-- Glowing top accent line -->
+<div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-secondary to-transparent opacity-50"></div>
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-secondary text-[18px]">memory</span>
+<h3 class="font-label-caps text-label-caps text-on-surface tracking-wider">Agent Thoughts Log</h3>
+</div>
+<div class="flex-1 overflow-y-auto pr-2 space-y-3 font-code-sm text-code-sm text-on-surface-variant">
+<div class="border-l-2 border-primary/30 pl-3">
+<span class="text-primary opacity-70">[10:42:01] RAG:</span> Retrieving known vulnerability signatures for Nginx 1.18.0... Found 14 potential vectors.
+                    </div>
+<div class="border-l-2 border-primary/30 pl-3">
+<span class="text-primary opacity-70">[10:42:15] EXEC:</span> Initiating concurrent fuzzing on /api/v2/users endpoint. Parameters: id, role, token.
+                    </div>
+<div class="border-l-2 border-error/50 pl-3 bg-error/5 py-1 rounded-r">
+<span class="text-error opacity-90">[10:42:33] ALERT:</span> Anomaly detected in response to malformed JWT token. Investigating potential SQLi via ID parameter...
+                    </div>
+<div class="border-l-2 border-secondary/50 pl-3">
+<span class="text-secondary opacity-70">[10:42:35] REASON:</span> The database response timing increased by 400ms when appending standard blind SQLi payloads. Crafting secondary payload to confirm.
+                    </div>
+<div class="border-l-2 border-outline-variant pl-3 opacity-50">
+<span class="text-outline">[10:42:40] WAIT:</span> Awaiting response block...
+                    </div>
+</div>
+</div>
+</aside>
+<!-- Center Column: Main Report (Col Span 6) -->
+<section class="col-span-1 lg:col-span-6 h-full flex flex-col gap-gutter overflow-hidden">
+<div class="bg-surface-container/60 backdrop-blur-2xl border border-white/10 rounded-xl p-6 h-full flex flex-col shadow-xl relative overflow-hidden">
+<!-- Decorative background grid -->
+<div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: radial-gradient(#d3e4fe 1px, transparent 1px); background-size: 20px 20px;"></div>
+<!-- Report Header -->
+<div class="flex justify-between items-start mb-6 relative z-10 border-b border-outline-variant/30 pb-4">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight mb-2">Live Vulnerability Report</h1>
+<p class="font-body-md text-body-md text-on-surface-variant flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary inline-block"></span>
+                            Generated by SentinelAI Core
+                        </p>
+</div>
+<button class="bg-surface-bright border border-outline-variant hover:border-primary hover:text-primary text-on-surface-variant font-label-caps text-label-caps px-4 py-2 rounded-lg flex items-center gap-2 transition-all shadow-sm hover:shadow-[0_0_15px_rgba(78,222,163,0.2)]">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+                        COPY REPORT
+                    </button>
+</div>
+<!-- Scrollable Markdown Content -->
+<div class="flex-1 overflow-y-auto pr-4 relative z-10 pb-10">
+<!-- Finding Item 1: Critical -->
+<div class="mb-8 bg-surface-dim/50 border border-error/20 rounded-xl p-5 relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-error shadow-[0_0_10px_rgba(255,180,171,0.8)]"></div>
+<div class="flex justify-between items-start mb-4">
+<h2 class="font-headline-md text-headline-md-mobile text-on-surface">Unauthenticated SQL Injection</h2>
+<!-- Critical Badge with Emerald Pulse logic requested in prompt, applying to critical finding -->
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/50 text-primary shadow-[0_0_15px_rgba(78,222,163,0.3)] animate-pulse">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<span class="font-label-caps text-label-caps uppercase">Critical Impact</span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4">
+                            The endpoint <code class="font-code-md text-code-sm bg-surface-container-highest px-2 py-0.5 rounded text-secondary">/api/v2/users</code> is vulnerable to Time-Based Blind SQL Injection via the <code class="font-code-md text-code-sm bg-surface-container-highest px-2 py-0.5 rounded text-secondary">id</code> parameter. An attacker can extract database schema and contents without authentication.
+                        </p>
+<!-- Code Block -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg overflow-hidden mb-4">
+<div class="bg-surface-container-high px-4 py-2 border-b border-outline-variant flex justify-between items-center">
+<span class="font-code-sm text-code-sm text-on-surface-variant">Proof of Concept Payload (HTTP)</span>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant cursor-pointer hover:text-primary">content_copy</span>
+</div>
+<pre class="p-4 font-code-md text-code-md text-primary overflow-x-auto"><code>GET /api/v2/users?id=1%20AND%20(SELECT%207777%20FROM%20(SELECT(SLEEP(5)))a) HTTP/1.1
+Host: api.internal-vault.io
+User-Agent: SentinelAI/2.0
+Accept: application/json</code></pre>
+</div>
+</div>
+<!-- Finding Item 2: Medium -->
+<div class="mb-8 bg-surface-dim/50 border border-outline-variant/30 rounded-xl p-5 relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-tertiary"></div>
+<div class="flex justify-between items-start mb-4">
+<h2 class="font-headline-md text-headline-md-mobile text-on-surface">Insecure Direct Object Reference (IDOR)</h2>
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-tertiary/10 border border-tertiary/30 text-tertiary">
+<span class="material-symbols-outlined text-[14px]">warning</span>
+<span class="font-label-caps text-label-caps uppercase">High</span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4">
+                            Logged-in users can access billing records of other users by incrementing the <code class="font-code-md text-code-sm bg-surface-container-highest px-2 py-0.5 rounded text-secondary">invoice_id</code> in the URL path.
+                        </p>
+<!-- Data Table -->
+<div class="bg-surface-container border border-outline-variant rounded-lg overflow-hidden mb-4">
+<table class="w-full text-left font-body-md text-body-md">
+<thead class="bg-surface-container-high font-label-caps text-label-caps text-on-surface-variant">
+<tr>
+<th class="px-4 py-3 border-b border-outline-variant">Endpoint</th>
+<th class="px-4 py-3 border-b border-outline-variant">Method</th>
+<th class="px-4 py-3 border-b border-outline-variant">Status Code</th>
+</tr>
+</thead>
+<tbody class="text-on-surface divide-y divide-outline-variant/50">
+<tr class="hover:bg-surface-container-highest transition-colors">
+<td class="px-4 py-3 font-code-sm text-code-sm">/api/v2/billing/1042</td>
+<td class="px-4 py-3">GET</td>
+<td class="px-4 py-3 text-primary">200 OK</td>
+</tr>
+<tr class="hover:bg-surface-container-highest transition-colors">
+<td class="px-4 py-3 font-code-sm text-code-sm">/api/v2/billing/1043</td>
+<td class="px-4 py-3">GET</td>
+<td class="px-4 py-3 text-primary">200 OK (Unauthorized access)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Right Column: Suggestions Pipeline (Col Span 3) -->
+<aside class="hidden lg:flex flex-col col-span-3 gap-gutter h-full overflow-hidden">
+<div class="bg-surface-container/40 backdrop-blur-md border border-white/5 rounded-xl p-5 h-full flex flex-col shadow-lg">
+<div class="flex items-center gap-2 mb-6 border-b border-outline-variant/30 pb-4">
+<span class="material-symbols-outlined text-primary text-[20px]">psychology</span>
+<h3 class="font-headline-md text-headline-md-mobile text-on-surface">Remediation Pipeline</h3>
+</div>
+<div class="flex-1 overflow-y-auto pr-2 space-y-4">
+<!-- Card 1 -->
+<div class="bg-surface-container-highest/40 border border-error/30 hover:border-error hover:shadow-[0_0_15px_rgba(255,180,171,0.15)] transition-all rounded-lg p-4 cursor-pointer group">
+<h4 class="font-body-lg text-[15px] font-semibold text-on-surface mb-2 group-hover:text-error transition-colors">Parameterize Database Queries</h4>
+<p class="font-body-md text-[13px] text-on-surface-variant mb-3 leading-tight">Migrate all raw SQL execution strings to prepared statements using the application's ORM.</p>
+<div class="flex gap-2">
+<span class="text-[10px] font-label-caps px-2 py-1 bg-error/10 text-error rounded border border-error/20">IMPACT: HIGH</span>
+<span class="text-[10px] font-label-caps px-2 py-1 bg-tertiary/10 text-tertiary rounded border border-tertiary/20">EFFORT: MED</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-highest/40 border border-tertiary/30 hover:border-tertiary hover:shadow-[0_0_15px_rgba(208,188,255,0.15)] transition-all rounded-lg p-4 cursor-pointer group">
+<h4 class="font-body-lg text-[15px] font-semibold text-on-surface mb-2 group-hover:text-tertiary transition-colors">Implement Object-Level Access Control</h4>
+<p class="font-body-md text-[13px] text-on-surface-variant mb-3 leading-tight">Enforce authorization checks matching the requester's JWT context against the requested resource owner.</p>
+<div class="flex gap-2">
+<span class="text-[10px] font-label-caps px-2 py-1 bg-tertiary/10 text-tertiary rounded border border-tertiary/20">IMPACT: HIGH</span>
+<span class="text-[10px] font-label-caps px-2 py-1 bg-error/10 text-error rounded border border-error/20">EFFORT: HIGH</span>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-highest/40 border border-outline-variant hover:border-secondary hover:shadow-[0_0_15px_rgba(173,198,255,0.15)] transition-all rounded-lg p-4 cursor-pointer group">
+<h4 class="font-body-lg text-[15px] font-semibold text-on-surface mb-2 group-hover:text-secondary transition-colors">Strict Input Validation</h4>
+<p class="font-body-md text-[13px] text-on-surface-variant mb-3 leading-tight">Apply regex whitelisting for all incoming integer IDs to prevent fuzzing logic errors.</p>
+<div class="flex gap-2">
+<span class="text-[10px] font-label-caps px-2 py-1 bg-secondary/10 text-secondary rounded border border-secondary/20">IMPACT: MED</span>
+<span class="text-[10px] font-label-caps px-2 py-1 bg-primary/10 text-primary rounded border border-primary/20">EFFORT: LOW</span>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="bg-surface-container-highest/40 border border-outline-variant hover:border-secondary hover:shadow-[0_0_15px_rgba(173,198,255,0.15)] transition-all rounded-lg p-4 cursor-pointer group">
+<h4 class="font-body-lg text-[15px] font-semibold text-on-surface mb-2 group-hover:text-secondary transition-colors">Rotate Exposed JWT Secret</h4>
+<p class="font-body-md text-[13px] text-on-surface-variant mb-3 leading-tight">The signing key length is currently weak. Generate a new 256-bit HS256 key and invalidate sessions.</p>
+<div class="flex gap-2">
+<span class="text-[10px] font-label-caps px-2 py-1 bg-secondary/10 text-secondary rounded border border-secondary/20">IMPACT: MED</span>
+<span class="text-[10px] font-label-caps px-2 py-1 bg-primary/10 text-primary rounded border border-primary/20">EFFORT: LOW</span>
+</div>
+</div>
+<!-- Card 5 -->
+<div class="bg-surface-container-highest/40 border border-outline-variant hover:border-primary hover:shadow-[0_0_15px_rgba(78,222,163,0.15)] transition-all rounded-lg p-4 cursor-pointer group opacity-70 hover:opacity-100">
+<h4 class="font-body-lg text-[15px] font-semibold text-on-surface mb-2 group-hover:text-primary transition-colors">Rate Limit /api/v2/</h4>
+<p class="font-body-md text-[13px] text-on-surface-variant mb-3 leading-tight">Configure API gateway to throttle requests exceeding 100/min per IP to slow automated enumeration.</p>
+<div class="flex gap-2">
+<span class="text-[10px] font-label-caps px-2 py-1 bg-primary/10 text-primary rounded border border-primary/20">IMPACT: LOW</span>
+<span class="text-[10px] font-label-caps px-2 py-1 bg-primary/10 text-primary rounded border border-primary/20">EFFORT: LOW</span>
+</div>
+</div>
+</div>
+</div>
+</aside>
+</main>
+<!-- BottomNavBar (Status Bar variant) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-gutter py-2 bg-surface-container-high/80 backdrop-blur-md dark:bg-surface-container-high/80 border-t border-white/10 shadow-lg h-[72px]">
+<!-- Active Nav Item based on JSON logic but incorporating Dashboard requested text -->
+<div class="flex flex-col items-center justify-center bg-primary/20 text-primary rounded-xl px-6 py-1.5 transition-all scale-105 shadow-[0_0_15px_rgba(78,222,163,0.1)]">
+<span class="material-symbols-outlined text-[20px] mb-0.5" style="font-variation-settings: 'FILL' 1;">analytics</span>
+<span class="font-label-caps text-[10px] uppercase tracking-wider opacity-80">Progress</span>
+<span class="font-code-sm text-code-sm font-bold">Phase 3/6</span>
+</div>
+<!-- Inactive Nav Item -->
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all cursor-pointer">
+<span class="material-symbols-outlined text-[20px] mb-0.5">bug_report</span>
+<span class="font-label-caps text-[10px] uppercase tracking-wider opacity-60">Findings</span>
+<span class="font-code-sm text-code-sm text-error font-medium">12 Issues</span>
+</div>
+<!-- Inactive Nav Item -->
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all cursor-pointer">
+<span class="material-symbols-outlined text-[20px] mb-0.5">timer</span>
+<span class="font-label-caps text-[10px] uppercase tracking-wider opacity-60">Time</span>
+<span class="font-code-sm text-code-sm font-medium tracking-widest">00:14:23</span>
+</div>
+</nav>
+</body></html>

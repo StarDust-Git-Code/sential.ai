@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SentinelAI — Mission Control</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#031427;--surface:#0b1c30;--surface-hi:#1b2b3f;--surface-top:#26364a;
+  --text:#d3e4fe;--text-dim:#8899aa;--text-muted:#556677;
+  --primary:#4edea3;--primary-dim:#10b981;--primary-bg:rgba(78,222,163,0.1);
+  --secondary:#adc6ff;--secondary-bg:rgba(173,198,255,0.1);
+  --error:#ff6b6b;--error-bg:rgba(255,107,107,0.1);
+  --warning:#f59e0b;--warning-bg:rgba(245,158,11,0.1);
+  --border:rgba(255,255,255,0.08);--border-hi:rgba(255,255,255,0.15);
+  --glass:rgba(3,20,39,0.6);--blur:blur(12px);
+  --radius:10px;--radius-sm:6px;
+  --font:'Inter',system-ui,sans-serif;--mono:'JetBrains Mono',monospace;
+}
+html{font-size:15px}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--text-muted);border-radius:3px}
+
+/* ── Layout ── */
+.app{display:flex;flex-direction:column;height:100vh}
+header{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;background:rgba(3,20,39,0.8);backdrop-filter:var(--blur);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+header .brand{display:flex;align-items:center;gap:8px}
+header .brand span.logo{color:var(--primary);font-size:22px}
+header .brand h1{font-size:18px;font-weight:700;color:var(--primary);letter-spacing:-0.02em}
+header .nav-tabs{display:flex;gap:2px;background:var(--surface);border-radius:8px;padding:2px}
+header .nav-tabs button{padding:6px 16px;border:none;background:transparent;color:var(--text-dim);cursor:pointer;border-radius:6px;font-size:13px;font-weight:500;transition:all 0.2s}
+header .nav-tabs button.active{background:var(--surface-hi);color:var(--primary)}
+header .nav-tabs button:hover:not(.active){color:var(--text)}
+header .actions{display:flex;gap:8px;align-items:center}
+
+/* ── Buttons ── */
+.btn{padding:7px 16px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;font-size:13px;font-weight:500;display:inline-flex;align-items:center;gap:6px;transition:all 0.2s;font-family:var(--font)}
+.btn:hover{border-color:var(--border-hi);background:var(--surface-hi)}
+.btn-primary{background:var(--primary);color:#003824;border-color:var(--primary)}
+.btn-primary:hover{box-shadow:0 0 20px rgba(78,222,163,0.3)}
+.btn-error{background:var(--error-bg);color:var(--error);border-color:rgba(255,107,107,0.3)}
+.btn-warning{background:var(--warning-bg);color:var(--warning);border-color:rgba(245,158,11,0.3)}
+.btn-sm{padding:4px 10px;font-size:12px}
+.icon{font-size:18px;vertical-align:middle}
+.icon-sm{font-size:16px}
+
+/* ── Inputs ── */
+input,select{padding:8px 12px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:14px;font-family:var(--mono);outline:none;transition:border-color 0.2s}
+input:focus,select:focus{border-color:var(--primary)}
+input::placeholder{color:var(--text-muted)}
+
+/* ── Panels ── */
+.glass{background:var(--glass);backdrop-filter:var(--blur);border:1px solid var(--border);border-radius:var(--radius)}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.panel-header{padding:8px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px;background:rgba(255,255,255,0.02)}
+.panel-header h3{font-size:13px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em}
+.panel-body{padding:12px;overflow-y:auto;font-family:var(--mono);font-size:13px;line-height:1.6}
+
+/* ── Tabs (pages) ── */
+.page{display:none;flex:1;overflow:hidden}
+.page.active{display:flex}
+
+/* ─── AUDIT PAGE ─── */
+.audit-page{display:flex;flex-direction:column;gap:0;height:100%}
+.audit-toolbar{display:flex;gap:8px;padding:10px 16px;align-items:center;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.audit-toolbar input[type="text"]{flex:1;min-width:200px}
+.audit-content{display:grid;grid-template-columns:280px 1fr 320px;gap:0;flex:1;overflow:hidden}
+.audit-content>div{border-right:1px solid var(--border);overflow-y:auto}
+.audit-content>div:last-child{border-right:none}
+
+/* Left sidebar: phases + thoughts */
+.phase-sidebar{display:flex;flex-direction:column}
+.phase-list{padding:12px}
+.phase-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius-sm);margin-bottom:4px;transition:background 0.2s}
+.phase-item .phase-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;border:2px solid var(--text-muted);color:var(--text-muted);transition:all 0.3s}
+.phase-item.done .phase-icon{background:var(--primary);border-color:var(--primary);color:#003824}
+.phase-item.active .phase-icon{border-color:var(--secondary);color:var(--secondary);animation:pulse 1.5s infinite}
+.phase-item .phase-text{font-size:12px;font-weight:600;color:var(--text-dim)}
+.phase-item .phase-sub{font-size:11px;color:var(--text-muted)}
+.phase-item.active .phase-text{color:var(--secondary)}
+.phase-item.done .phase-text{color:var(--primary)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+
+.thought-log{flex:1;overflow-y:auto;border-top:1px solid var(--border)}
+.thought-log .panel-body{font-size:11px;color:var(--text-dim)}
+.thought-entry{margin-bottom:4px;padding:2px 0}
+.thought-entry .ts{color:var(--primary);margin-right:4px}
+
+/* Center: report */
+.report-panel{display:flex;flex-direction:column}
+.report-panel .panel-body{flex:1;white-space:pre-wrap;word-break:break-word}
+
+/* Right: suggestions + actions */
+.right-sidebar{display:flex;flex-direction:column}
+.suggestions-panel{flex:1;overflow-y:auto}
+.actions-panel{border-top:1px solid var(--border);padding:10px;display:flex;flex-direction:column;gap:6px}
+
+/* ── Chat bar ── */
+.chat-bar{display:flex;gap:8px;padding:8px 16px;border-top:1px solid var(--border);background:var(--surface)}
+.chat-bar input{flex:1}
+
+/* ── Status bar ── */
+.status-bar{display:flex;align-items:center;justify-content:space-between;padding:4px 16px;background:var(--surface);border-top:1px solid var(--border);font-size:11px;color:var(--text-muted)}
+.status-bar .status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
+.status-bar .status-dot.green{background:var(--primary)}
+.status-bar .status-dot.blue{background:var(--secondary);animation:pulse 1.5s infinite}
+.status-bar .status-dot.red{background:var(--error)}
+
+/* ─── HISTORY PAGE ─── */
+.history-page{flex-direction:column;padding:16px;gap:16px;overflow-y:auto}
+.history-table{width:100%;border-collapse:collapse;font-size:13px}
+.history-table th{text-align:left;padding:8px 12px;border-bottom:2px solid var(--border);color:var(--text-dim);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.05em}
+.history-table td{padding:8px 12px;border-bottom:1px solid var(--border)}
+.history-table tr:hover{background:rgba(255,255,255,0.03)}
+
+/* ── Severity Badges ── */
+.badge{padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;text-transform:uppercase}
+.badge-critical{background:rgba(239,68,68,0.2);color:#ef4444}
+.badge-high{background:rgba(249,115,22,0.2);color:#f97316}
+.badge-medium{background:rgba(234,179,8,0.2);color:#eab308}
+.badge-low{background:rgba(34,197,94,0.2);color:#22c55e}
+
+/* ── Settings modal ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:200}
+.modal-overlay.show{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border-hi);border-radius:12px;padding:24px;width:90%;max-width:480px}
+.modal h2{font-size:18px;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.key-list{display:flex;flex-direction:column;gap:6px;margin:12px 0;max-height:200px;overflow-y:auto}
+.key-item{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--surface-hi);border-radius:var(--radius-sm);font-family:var(--mono);font-size:13px}
+.key-item .dot{width:8px;height:8px;border-radius:50%;background:var(--primary);flex-shrink:0}
+
+/* ── Responsive ── */
+@media(max-width:900px){
+  .audit-content{grid-template-columns:1fr;grid-template-rows:auto 1fr auto}
+  .phase-sidebar{max-height:120px}
+  .right-sidebar{max-height:250px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <span class="material-symbols-outlined logo" style="font-variation-settings:'FILL' 1">shield_lock</span>
+      <h1>SentinelAI</h1>
+    </div>
+    <div class="nav-tabs">
+      <button class="active" onclick="showPage('audit')">
+        <span class="material-symbols-outlined icon-sm">terminal</span> Audit
+      </button>
+      <button onclick="showPage('history')">
+        <span class="material-symbols-outlined icon-sm">history</span> History
+      </button>
+    </div>
+    <div class="actions">
+      <span id="keyCount" style="font-size:12px;color:var(--text-dim)">Keys: 0</span>
+      <button class="btn btn-sm" onclick="openSettings()">
+        <span class="material-symbols-outlined icon-sm">settings</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ═══ AUDIT PAGE ═══ -->
+  <div id="page-audit" class="page active audit-page">
+    <!-- Toolbar -->
+    <div class="audit-toolbar">
+      <input type="text" id="targetInput" placeholder="https://github.com/org/repo or local path"/>
+      <select id="complianceSelect">
+        <option value="">No Compliance</option>
+      </select>
+      <button class="btn btn-primary" id="startBtn" onclick="startAudit()">
+        <span class="material-symbols-outlined icon-sm" style="font-variation-settings:'FILL' 1">play_arrow</span>
+        Start Audit
+      </button>
+    </div>
+
+    <!-- 3-column layout -->
+    <div class="audit-content">
+      <!-- Left: Phases + Thought Log -->
+      <div class="phase-sidebar">
+        <div class="panel-header"><h3>Audit Phases</h3></div>
+        <div class="phase-list" id="phaseList">
+          <div class="phase-item" data-phase="0"><div class="phase-icon">0</div><div><div class="phase-text">Resolve Target</div><div class="phase-sub">Clone / validate path</div></div></div>
+          <div class="phase-item" data-phase="1"><div class="phase-icon">1</div><div><div class="phase-text">Static Analysis</div><div class="phase-sub">Gitleaks secrets scan</div></div></div>
+          <div class="phase-item" data-phase="2"><div class="phase-icon">2</div><div><div class="phase-text">Vector Index</div><div class="phase-sub">ChromaDB RAG</div></div></div>
+          <div class="phase-item" data-phase="3"><div class="phase-icon">3</div><div><div class="phase-text">Code Ingestion</div><div class="phase-sub">Full source context</div></div></div>
+          <div class="phase-item" data-phase="4"><div class="phase-icon">4</div><div><div class="phase-text">Deep Audit</div><div class="phase-sub">6-phase AI analysis</div></div></div>
+          <div class="phase-item" data-phase="5"><div class="phase-icon">5</div><div><div class="phase-text">Remediation</div><div class="phase-sub">Prioritized fixes</div></div></div>
+        </div>
+        <div class="thought-log">
+          <div class="panel-header"><h3><span class="material-symbols-outlined icon-sm">psychology</span> Agent Thoughts</h3></div>
+          <div class="panel-body" id="thoughtLog"></div>
+        </div>
+      </div>
+
+      <!-- Center: Report -->
+      <div class="report-panel">
+        <div class="panel-header">
+          <h3>Live Vulnerability Report</h3>
+          <div style="display:flex;gap:4px">
+            <button class="btn btn-sm" onclick="copyReport()" title="Copy Report"><span class="material-symbols-outlined icon-sm">content_copy</span></button>
+          </div>
+        </div>
+        <div class="panel-body" id="reportLog" style="flex:1;overflow-y:auto">
+          <span style="color:var(--text-muted)">Start an audit to see the live vulnerability report...</span>
+        </div>
+      </div>
+
+      <!-- Right: Suggestions + Feature Buttons -->
+      <div class="right-sidebar">
+        <div class="suggestions-panel">
+          <div class="panel-header">
+            <h3><span class="material-symbols-outlined icon-sm">checklist</span> Remediation Pipeline</h3>
+            <button class="btn btn-sm" onclick="copySuggestions()" title="Copy"><span class="material-symbols-outlined icon-sm">content_copy</span></button>
+          </div>
+          <div class="panel-body" id="suggestionsLog" style="flex:1;overflow-y:auto">
+            <span style="color:var(--text-muted)">Remediation plan appears here after audit...</span>
+          </div>
+        </div>
+        <div class="actions-panel" id="actionsPanel" style="display:none">
+          <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px">Post-Audit Actions</div>
+          <button class="btn" onclick="doExport()"><span class="material-symbols-outlined icon-sm">description</span> Export HTML Report</button>
+          <button class="btn btn-error" onclick="doPatches()"><span class="material-symbols-outlined icon-sm">build</span> Generate Fix Patches</button>
+          <button class="btn" onclick="doSbom()"><span class="material-symbols-outlined icon-sm">inventory_2</span> Generate SBOM</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat Bar -->
+    <div class="chat-bar" id="chatBar" style="display:none">
+      <span class="material-symbols-outlined icon" style="color:var(--primary)">chat</span>
+      <input type="text" id="chatInput" placeholder="Ask SentinelAI about this codebase..." onkeydown="if(event.key==='Enter')doChat()"/>
+      <button class="btn btn-primary btn-sm" onclick="doChat()">Ask</button>
+    </div>
+  </div>
+
+  <!-- ═══ HISTORY PAGE ═══ -->
+  <div id="page-history" class="page history-page">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <h2 style="font-size:20px;font-weight:700">Audit History</h2>
+      <button class="btn btn-sm" onclick="loadHistory()"><span class="material-symbols-outlined icon-sm">refresh</span> Refresh</button>
+    </div>
+    <div id="historyContent">
+      <p style="color:var(--text-muted)">Loading...</p>
+    </div>
+  </div>
+
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <div id="statusText"><span class="status-dot green"></span>Ready</div>
+    <div id="statusRight">SentinelAI v2.0</div>
+  </div>
+</div>
+
+<!-- ═══ SETTINGS MODAL ═══ -->
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal">
+    <h2><span class="material-symbols-outlined icon" style="color:var(--primary)">key</span> API Key Management</h2>
+    <p style="font-size:12px;color:var(--text-dim);margin-bottom:12px;padding:8px;background:var(--primary-bg);border-radius:6px;border-left:3px solid var(--primary)">
+      Keys are stored in memory on the local server. Never sent externally.
+    </p>
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <input type="password" id="newKeyInput" placeholder="Paste Gemini API key..." style="flex:1"/>
+      <button class="btn btn-primary" onclick="addKey()">+ Add Key</button>
+    </div>
+    <div class="key-list" id="keyList"></div>
+    <div style="text-align:right;margin-top:16px">
+      <button class="btn" onclick="closeSettings()">Done</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── State ───
+let sessionId = null;
+let auditReport = '';
+let auditSuggestions = '';
+let ws = null;
+let keysList = [];
+
+// ─── Page Navigation ───
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.querySelectorAll('.nav-tabs button').forEach(b => b.classList.remove('active'));
+  event.target.closest('button').classList.add('active');
+  if (name === 'history') loadHistory();
+}
+
+// ─── Settings Modal ───
+function openSettings() { document.getElementById('settingsModal').classList.add('show'); updateKeyList(); }
+function closeSettings() { document.getElementById('settingsModal').classList.remove('show'); }
+
+async function addKey() {
+  const input = document.getElementById('newKeyInput');
+  const key = input.value.trim();
+  if (!key) return;
+  const res = await fetch('/api/keys', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({key}) });
+  const data = await res.json();
+  input.value = '';
+  keysList.push(key);
+  updateKeyCount(data.count);
+  updateKeyList();
+}
+
+function updateKeyCount(n) { document.getElementById('keyCount').textContent = 'Keys: ' + n; }
+function updateKeyList() {
+  const list = document.getElementById('keyList');
+  list.innerHTML = keysList.map(k =>
+    '<div class="key-item"><div class="dot"></div>sk-...' + k.slice(-6) + '</div>'
+  ).join('') || '<div style="color:var(--text-muted);font-size:13px">No keys added yet</div>';
+}
+
+// ─── Compliance Profiles ───
+async function loadCompliance() {
+  try {
+    const res = await fetch('/api/compliance');
+    const data = await res.json();
+    const sel = document.getElementById('complianceSelect');
+    data.profiles.forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p.key;
+      opt.textContent = p.name;
+      sel.appendChild(opt);
+    });
+  } catch(e) {}
+}
+
+// ─── Start Audit (WebSocket) ───
+function startAudit() {
+  const target = document.getElementById('targetInput').value.trim();
+  const compliance = document.getElementById('complianceSelect').value;
+  if (!target) { document.getElementById('targetInput').focus(); return; }
+
+  // Reset UI
+  auditReport = '';
+  auditSuggestions = '';
+  sessionId = null;
+  document.getElementById('reportLog').textContent = '';
+  document.getElementById('suggestionsLog').innerHTML = '<span style="color:var(--text-muted)">Waiting for audit to complete...</span>';
+  document.getElementById('thoughtLog').textContent = '';
+  document.getElementById('actionsPanel').style.display = 'none';
+  document.getElementById('chatBar').style.display = 'none';
+  document.querySelectorAll('.phase-item').forEach(p => { p.classList.remove('done','active'); });
+
+  setStatus('blue', 'Connecting...');
+  document.getElementById('startBtn').disabled = true;
+
+  const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+  ws = new WebSocket(proto + '//' + location.host + '/ws/audit');
+
+  ws.onopen = () => {
+    ws.send(JSON.stringify({ target, compliance }));
+    setStatus('blue', 'Audit running...');
+  };
+
+  ws.onmessage = (e) => {
+    const msg = JSON.parse(e.data);
+    switch(msg.type) {
+      case 'phase':
+        activatePhase(msg.data.phase, msg.data.name);
+        break;
+      case 'log':
+        addThought(msg.data);
+        break;
+      case 'report_chunk':
+        document.getElementById('reportLog').textContent += msg.data;
+        auditReport += msg.data;
+        // Auto-scroll
+        const rl = document.getElementById('reportLog');
+        rl.scrollTop = rl.scrollHeight;
+        break;
+      case 'suggestions':
+        auditSuggestions = msg.data;
+        document.getElementById('suggestionsLog').textContent = msg.data;
+        break;
+      case 'complete':
+        sessionId = msg.data.session_id;
+        completeAllPhases();
+        document.getElementById('actionsPanel').style.display = 'flex';
+        document.getElementById('chatBar').style.display = 'flex';
+        document.getElementById('startBtn').disabled = false;
+        setStatus('green', 'Audit complete — Session ' + sessionId);
+        break;
+      case 'error':
+        addThought('ERROR: ' + msg.data);
+        setStatus('red', 'Error');
+        document.getElementById('startBtn').disabled = false;
+        break;
+    }
+  };
+
+  ws.onclose = () => {
+    if (!sessionId) {
+      document.getElementById('startBtn').disabled = false;
+    }
+  };
+  ws.onerror = () => {
+    setStatus('red', 'WebSocket error');
+    document.getElementById('startBtn').disabled = false;
+  };
+}
+
+function activatePhase(num, name) {
+  document.querySelectorAll('.phase-item').forEach(p => {
+    const pn = parseInt(p.dataset.phase);
+    if (pn < num) { p.classList.add('done'); p.classList.remove('active'); }
+    else if (pn === num) { p.classList.add('active'); p.classList.remove('done'); }
+  });
+  addThought(name + '...');
+}
+
+function completeAllPhases() {
+  document.querySelectorAll('.phase-item').forEach(p => { p.classList.add('done'); p.classList.remove('active'); });
+}
+
+function addThought(text) {
+  const log = document.getElementById('thoughtLog');
+  const now = new Date().toLocaleTimeString('en-US', {hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const entry = document.createElement('div');
+  entry.className = 'thought-entry';
+  entry.innerHTML = '<span class="ts">[' + now + ']</span>' + escapeHtml(text.replace(/\[.*?\]/g, '').trim());
+  log.appendChild(entry);
+  log.scrollTop = log.scrollHeight;
+}
+
+function setStatus(color, text) {
+  document.getElementById('statusText').innerHTML = '<span class="status-dot ' + color + '"></span>' + text;
+}
+
+// ─── Post-Audit Actions ───
+async function doExport() {
+  if (!sessionId) return;
+  setStatus('blue', 'Exporting...');
+  try {
+    const res = await fetch('/api/export/' + sessionId, { method: 'POST' });
+    const data = await res.json();
+    addThought('Report exported: ' + data.path);
+    setStatus('green', 'Exported: ' + data.path);
+  } catch(e) { addThought('Export failed: ' + e); setStatus('red', 'Export failed'); }
+}
+
+async function doPatches() {
+  if (!sessionId) return;
+  setStatus('blue', 'Generating patches...');
+  addThought('Generating security fix patches...');
+  try {
+    const res = await fetch('/api/patches/' + sessionId, { method: 'POST' });
+    const data = await res.json();
+    addThought('Generated ' + data.count + ' patches');
+    if (data.output_dir) addThought('Saved to: ' + data.output_dir);
+    data.patches.forEach(p => addThought('  [' + p.severity + '] ' + p.file));
+    setStatus('green', data.count + ' patches generated');
+  } catch(e) { addThought('Patch gen failed: ' + e); setStatus('red', 'Patch gen failed'); }
+}
+
+async function doSbom() {
+  if (!sessionId) return;
+  setStatus('blue', 'Generating SBOM...');
+  try {
+    const res = await fetch('/api/sbom/' + sessionId, { method: 'POST' });
+    const data = await res.json();
+    addThought('SBOM generated: ' + data.component_count + ' components');
+    addThought('Saved: ' + data.path);
+    setStatus('green', 'SBOM: ' + data.component_count + ' components');
+  } catch(e) { addThought('SBOM failed: ' + e); setStatus('red', 'SBOM failed'); }
+}
+
+async function doChat() {
+  const input = document.getElementById('chatInput');
+  const question = input.value.trim();
+  if (!question || !sessionId) return;
+  input.value = '';
+  addThought('You: ' + question);
+  setStatus('blue', 'Thinking...');
+  try {
+    const res = await fetch('/api/chat/' + sessionId, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({question})
+    });
+    const data = await res.json();
+    // Show answer in suggestions pane
+    const sl = document.getElementById('suggestionsLog');
+    sl.textContent = 'Q: ' + question + '\n\n' + data.answer;
+    addThought('AI answered (' + data.answer.length + ' chars)');
+    setStatus('green', 'Chat response received');
+  } catch(e) { addThought('Chat error: ' + e); setStatus('red', 'Chat failed'); }
+}
+
+// ─── Copy ───
+function copyReport() {
+  if (auditReport) { navigator.clipboard.writeText(auditReport); setStatus('green', 'Report copied'); }
+}
+function copySuggestions() {
+  if (auditSuggestions) { navigator.clipboard.writeText(auditSuggestions); setStatus('green', 'Suggestions copied'); }
+}
+
+// ─── History ───
+async function loadHistory() {
+  try {
+    const res = await fetch('/api/history?limit=20');
+    const data = await res.json();
+    const container = document.getElementById('historyContent');
+
+    if (!data.audits.length) {
+      container.innerHTML = '<p style="color:var(--text-muted)">No audit history yet. Run your first audit!</p>';
+      return;
+    }
+
+    let html = '<table class="history-table"><thead><tr><th>ID</th><th>Target</th><th>Date</th><th>Risk</th><th>C</th><th>H</th><th>M</th><th>L</th><th>Total</th></tr></thead><tbody>';
+    data.audits.forEach(a => {
+      const ts = a.timestamp.slice(0,19).replace('T',' ');
+      const riskClass = a.overall_risk === 'CRITICAL' ? 'badge-critical' : a.overall_risk === 'HIGH' ? 'badge-high' : a.overall_risk === 'MEDIUM' ? 'badge-medium' : 'badge-low';
+      html += '<tr>' +
+        '<td style="font-family:var(--mono)">' + a.id + '</td>' +
+        '<td>' + escapeHtml(a.target) + '</td>' +
+        '<td style="color:var(--text-dim)">' + ts + '</td>' +
+        '<td><span class="badge ' + riskClass + '">' + a.overall_risk + '</span></td>' +
+        '<td style="color:var(--error)">' + a.critical_count + '</td>' +
+        '<td style="color:#f97316">' + a.high_count + '</td>' +
+        '<td style="color:#eab308">' + a.medium_count + '</td>' +
+        '<td style="color:var(--primary)">' + a.low_count + '</td>' +
+        '<td style="font-weight:700">' + a.total_findings + '</td>' +
+        '</tr>';
+    });
+    html += '</tbody></table>';
+    container.innerHTML = html;
+
+    // Also load common vulns
+    const vRes = await fetch('/api/common-vulns?limit=5');
+    const vData = await vRes.json();
+    if (vData.vulnerabilities.length) {
+      let vhtml = '<h3 style="margin-top:24px;font-size:15px;font-weight:600">Most Common Vulnerabilities</h3>';
+      vhtml += '<div style="margin-top:8px;display:flex;flex-direction:column;gap:6px">';
+      vData.vulnerabilities.forEach(v => {
+        const cls = v.severity === 'Critical' ? 'badge-critical' : v.severity === 'High' ? 'badge-high' : 'badge-medium';
+        vhtml += '<div style="padding:8px 12px;background:var(--surface-hi);border-radius:6px;font-size:13px">' +
+          '<span class="badge ' + cls + '">' + v.severity + '</span> ' +
+          escapeHtml(v.description.slice(0,80)) +
+          ' <span style="color:var(--text-muted)">(' + v.occurrence_count + 'x)</span></div>';
+      });
+      vhtml += '</div>';
+      container.innerHTML += vhtml;
+    }
+  } catch(e) {
+    document.getElementById('historyContent').innerHTML = '<p style="color:var(--error)">Failed to load history</p>';
+  }
+}
+
+// ─── Utils ───
+function escapeHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+// ─── Init ───
+async function init() {
+  loadCompliance();
+  try {
+    const r = await fetch('/api/keys/count');
+    const d = await r.json();
+    updateKeyCount(d.count);
+  } catch(e) {}
+}
+init();
+</script>
+</body>
+</html>

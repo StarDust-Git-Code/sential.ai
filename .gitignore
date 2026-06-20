@@ -1,0 +1,35 @@
+# Virtual environment
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# SentinelAI cached API keys (SENSITIVE - never commit!)
+.sentinel_keys.json
+
+# Cloned repos cache
+.sentinel_repos/
+
+# Gitleaks reports
+gitleaks_report.json
+
+# Generated reports
+sentinel_report_*.html
+sentinel_report_*.pdf
+sentinel_report.json
+sentinel_patches/
+sentinel_sbom.json
+sentinel_history.db
+
+# Temp files from docx extraction
+SentinelAI_temp/
+SentinelAI_temp.zip
+
+# IDE
+.vscode/
+.idea/
+
+# Temp files
+temp-*.md
+sentinel_history.db-*

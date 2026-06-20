@@ -1,0 +1,116 @@
+name: SentinelAI Security Audit
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'Path or GitHub URL to audit'
+        required: false
+        default: '.'
+      compliance:
+        description: 'Compliance framework (owasp, pci-dss, hipaa, soc2, gdpr, cwe25)'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  security-audit:
+    name: 🛡️ SentinelAI Audit
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install SentinelAI
+        run: |
+          pip install -r requirements.txt
+          # Install gitleaks for static analysis
+          curl -sSfL https://raw.githubusercontent.com/gitleaks/gitleaks/master/scripts/install.sh | sh -s -- -b /usr/local/bin
+
+      - name: Run Security Audit
+        id: audit
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          TARGET="${{ github.event.inputs.target || '.' }}"
+          COMPLIANCE="${{ github.event.inputs.compliance || '' }}"
+          
+          EXTRA_ARGS=""
+          if [ -n "$COMPLIANCE" ]; then
+            EXTRA_ARGS="--compliance $COMPLIANCE"
+          fi
+          
+          python main.py audit "$TARGET" \
+            --keys "$GEMINI_API_KEY" \
+            --ci \
+            --export html \
+            $EXTRA_ARGS
+          
+          echo "exit_code=$?" >> $GITHUB_OUTPUT
+
+      - name: Post PR Review Comments
+        if: github.event_name == 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python -c "
+          from ci_reporter import post_github_pr_comments
+          import json
+          
+          with open('sentinel_report.json', 'r') as f:
+              report = json.load(f)
+          
+          post_github_pr_comments(
+              report,
+              repo='${{ github.repository }}',
+              pr_number=${{ github.event.pull_request.number }},
+              token='${{ secrets.GITHUB_TOKEN }}'
+          )
+          "
+
+      - name: Write Job Summary
+        if: always()
+        run: |
+          python -c "
+          from ci_reporter import format_github_summary
+          import json, os
+          
+          with open('sentinel_report.json', 'r') as f:
+              report = json.load(f)
+          
+          summary = format_github_summary(report)
+          
+          summary_file = os.environ.get('GITHUB_STEP_SUMMARY', '/dev/null')
+          with open(summary_file, 'a') as f:
+              f.write(summary)
+          "
+
+      - name: Upload Audit Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sentinel-audit-report
+          path: |
+            sentinel_report.json
+            sentinel_report_*.html
+            sentinel_patches/
+          retention-days: 30
+
+      - name: Security Gate
+        if: steps.audit.outputs.exit_code == '1'
+        run: |
+          echo "::error::SentinelAI found Critical or High severity vulnerabilities. See the audit report for details."
+          exit 1
