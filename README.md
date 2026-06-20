@@ -1,129 +1,183 @@
-<div align="center">
-  <img src="banner.svg" alt="SentinelAI Banner" width="100%" />
-  
-  <h3>🚀 AI-Powered Enterprise Security Auditing for Modern Codebases</h3>
-  <p>Identify deep logic flaws, enforce compliance, and secure your repositories using Multi-Agent RAG.</p>
-</div>
+# SentinelAI
+
+**Enterprise-Grade AI Security Auditing for Modern Codebases**
+
+SentinelAI is a revolutionary security auditing tool that bridges the gap between traditional Static Application Security Testing (SAST) and human-level security reviews. By leveraging Large Language Models (LLMs) and Retrieval-Augmented Generation (RAG), SentinelAI builds a deep, semantic understanding of your entire repository to find complex business-logic flaws, authorization bypasses, and security vulnerabilities that legacy scanners completely miss.
 
 ---
 
-## 💡 The Problem
+## 📑 Table of Contents
 
-Modern software development moves fast, and traditional Static Application Security Testing (SAST) tools can't keep up. Legacy scanners rely heavily on rigid regular expressions and pattern matching, which leads to two massive problems:
-1. **High False Positives**: Flooding developers with useless alerts.
-2. **Context Blindness**: They check files *independently*, entirely missing business logic flaws, authorization bypasses, and complex attack chains that span multiple files.
-
-For startups, hackathon teams, and fast-moving enterprises, hiring dedicated security engineers to manually review every PR is too expensive and too slow.
-
----
-
-## 🎯 Our Solution: SentinelAI
-
-SentinelAI is a next-generation security auditor that bridges the gap between traditional scanning and human-level security review. 
-
-By combining **Large Language Models (Gemini)** with **Retrieval-Augmented Generation (ChromaDB)**, SentinelAI doesn't just read your code line-by-line—it *understands* your entire repository's architecture. It maps out your authentication flows, database interactions, and API routes, simulating real-world attack paths to find deep contextual vulnerabilities that pattern-matchers miss.
-
-<div align="center">
-  <img src="divider.svg" alt="Divider" width="80%" />
-</div>
-
-## ✨ Key Features
-
-* 🧠 **Context-Aware AI Analysis**: Uses Gemini and local RAG (ChromaDB) to understand how files interact, finding logic flaws regular scanners miss.
-* 🖥️ **Dual Interfaces**: Choose between our hacker-style **Terminal UI (TUI)** or our beautiful, glassmorphism **Web Dashboard (Mission Control)**.
-* 📜 **Native Compliance Engines**: Automatically checks your codebase against enterprise frameworks including **OWASP Top 10, HIPAA, GDPR, PCI-DSS, SOC2, and CWE**.
-* 📦 **Automated SBOMs**: Generates CycloneDX Software Bill of Materials instantly.
-* 🛠️ **1-Click Remediation**: Not only finds bugs but generates `.patch` files to automatically fix them.
-* 💬 **Interactive Code Chat**: Chat directly with your codebase's security context after an audit to ask follow-up questions.
-* 📊 **History & Trends**: Local SQLite database tracks your audit history, letting you see your security posture improve over time.
-* 🤖 **CI/CD Pipeline Ready**: Headless mode outputs structured JSON and returns severity-based exit codes for GitHub Actions/GitLab CI.
-* 📑 **Rich Exporting**: Export professional, styled reports to HTML or PDF for stakeholders.
+- [The Problem with Legacy Scanners](#-the-problem-with-legacy-scanners)
+- [The SentinelAI Solution](#-the-sentinelai-solution)
+- [Core Features](#-core-features)
+- [Deep Dive: Technical Architecture](#-deep-dive-technical-architecture)
+- [Supported Compliance Frameworks](#-supported-compliance-frameworks)
+- [Installation Guide](#-installation-guide)
+- [Comprehensive Usage Guide](#-comprehensive-usage-guide)
+- [Data Privacy & Security](#-data-privacy--security)
 
 ---
 
-## 🏗️ Technical Architecture
+## 🛑 The Problem with Legacy Scanners
 
-<div align="center">
-  <img src="roadmap.svg" alt="Architecture Roadmap" width="100%" />
-</div>
+Modern software development moves at lightning speed, but security tooling has lagged behind. Traditional SAST tools rely heavily on rigid regular expressions, Abstract Syntax Tree (AST) matching, and static pattern recognition. This creates massive friction for engineering teams:
 
-SentinelAI operates through a robust 6-phase pipeline:
-1. **Target Resolution**: Seamlessly clones remote GitHub repos or analyzes local folders.
-2. **Pre-Scan (Gitleaks)**: High-speed traditional scanning for hardcoded secrets and API keys.
-3. **RAG Vectorization**: Chunks source files, generates summaries, and builds a searchable semantic index in **ChromaDB**.
-4. **Multi-Agent Analysis**: Analyzes dependencies, hunts for architecture weaknesses, and cross-references against compliance profiles.
-5. **Report Generation**: Synthesizes findings, builds mitigation steps, and assigns accurate severity scores.
-6. **Serving**: Streams real-time results via WebSockets (FastAPI) to the Frontend or renders them in the Textual TUI.
+1. **Context Blindness**: Legacy scanners check files independently. They cannot understand that a variable instantiated in `middleware.ts` is insecurely passed into a database query in `routes.py`. 
+2. **Business Logic Ignorance**: Traditional tools cannot understand the *intent* of your code. They cannot detect if an API endpoint allows users to escalate their privileges or access another user's tenant data (BOLA/IDOR).
+3. **Alert Fatigue**: Developers are bombarded with hundreds of false positives (e.g., flagging a test-suite variable named `password` as a critical vulnerability).
+
+Hiring dedicated security engineers to manually review every Pull Request is too slow and too expensive for startups and hackathon teams.
 
 ---
 
-## 🚀 Installation
+## 💡 The SentinelAI Solution
 
-We've built a frictionless, one-click installer for Windows environments. It automatically installs Python, Git, Gitleaks, creates an isolated virtual environment, installs all dependencies, and adds `sentinelai` to your System PATH.
+SentinelAI flips the paradigm. Instead of searching for known bad strings, it **reads and comprehends your codebase like a Senior Security Engineer**.
 
-1. Clone the repository:
+Using a local **ChromaDB** vector database and Google's **Gemini LLM**, SentinelAI maps out your repository's architecture. It understands your authentication flows, database schemas, and API routing. When evaluating a specific function, the AI is provided with the full semantic context of how that function interacts with the rest of the application. It then simulates real-world attack paths to find complex, multi-step vulnerabilities.
+
+---
+
+## ✨ Core Features
+
+### 1. 🧠 Multi-Agent RAG Analysis
+SentinelAI chunks your codebase, generates intelligent summaries, and builds a searchable semantic index. It utilizes specialized AI prompts to hunt for architectural weaknesses, injection flaws, and dependency risks with deep context.
+
+### 2. 🖥️ Dual Interfaces
+- **Terminal UI (TUI)**: A beautifully styled, hacker-friendly, interactive terminal dashboard for developers who never want to leave their command line.
+- **Web UI (Mission Control)**: A full-featured browser dashboard with real-time WebSocket streaming, visual analytics, and interactive chat.
+
+### 3. 📜 Native Compliance Engine
+Ensure your code meets legal and enterprise standards. SentinelAI natively scans against compliance profiles and highlights exact lines of code that violate regulations.
+
+### 4. 🛠️ Auto-Remediation Patch Generation
+Don't just find bugs—fix them. SentinelAI can automatically generate standard `.patch` files containing exact code changes to mitigate discovered vulnerabilities.
+
+### 5. 📦 Automated SBOM Generation
+Instantly generate standard **CycloneDX Software Bill of Materials (SBOM) in JSON format**. Essential for enterprise vendor compliance and tracking supply chain risks.
+
+### 6. 💬 Interactive Code Chat
+Drop into a chat interface *after* an audit finishes. Ask questions like *"How do I implement the suggested fix for the JWT vulnerability in line 45?"* and get contextual answers instantly.
+
+### 7. 🤖 Headless CI/CD Mode
+Designed for pipelines. In CI mode, SentinelAI outputs a structured JSON report and automatically fails the build (exit code `1`) if vulnerabilities exceeding a specified severity are found.
+
+### 8. 📊 Historical Trending & Analytics
+A local SQLite database (`sentinel_history.db`) tracks every audit you run, letting you visualize your project's security posture improving (or degrading) over time.
+
+---
+
+## 🏗️ Deep Dive: Technical Architecture
+
+SentinelAI operates through an intensive **6-Phase Security Pipeline**:
+
+1. **Target Resolution**: Validates the local folder or securely clones a remote GitHub repository.
+2. **Phase 1: Pre-Scan (Gitleaks)**: Executes a high-speed traditional scan using Gitleaks to instantly detect hardcoded API keys, passwords, and sensitive tokens.
+3. **Phase 2: RAG Vectorization**: Your codebase is tokenized and chunked. Gemini Embedding models convert the code into mathematical vectors, which are stored in an ephemeral **ChromaDB** instance.
+4. **Phase 3: Context Building**: SentinelAI creates a master architectural overview, mapping out how different files and directories relate to one another.
+5. **Phase 4: Multi-Agent Analysis**: The core engine. It executes specialized prompts against the LLM, feeding it highly relevant codebase chunks retrieved from the vector database to hunt for logic flaws.
+6. **Phase 5 & 6: Reporting & Remediation**: Findings are synthesized, severity scores are standardized, and the final output is routed to the CLI, TUI, Web Server, HTML Exporter, or JSON/SBOM builder.
+
+---
+
+## 📋 Supported Compliance Frameworks
+
+Pass the `--compliance <framework>` flag to audit your code against specific industry standards:
+
+- `owasp`: Checks against the OWASP Top 10 Web Application Security Risks.
+- `gdpr`: EU General Data Protection Regulation (focuses on Data Minimization, Right to Erasure, Encryption).
+- `hipaa`: Health Insurance Portability and Accountability Act (focuses on ePHI protection, audit controls).
+- `pci-dss`: Payment Card Industry Data Security Standard (focuses on secure transmission, cardholder data protection).
+- `soc2`: System and Organization Controls 2 (focuses on Security, Availability, and Confidentiality principles).
+- `cwe25`: Top 25 Most Dangerous Software Weaknesses.
+
+---
+
+## 🚀 Installation Guide
+
+We've built a frictionless, idempotent installation script for Windows environments.
+
+**What the installer does automatically:**
+- Verifies and installs Python 3.10+ (via winget if missing).
+- Verifies Git (via winget if missing).
+- Downloads and configures the `gitleaks` binary for Phase 1 scanning.
+- Creates an isolated Python virtual environment (`.venv`).
+- Installs all heavily pinned dependencies from `requirements.txt`.
+- Registers the `sentinelai` command globally in your Windows System PATH.
+
+### Steps:
+1. Clone or download the repository:
    ```bash
    git clone https://github.com/StarDust-Git-Code/sential.ai.git
    cd sential.ai
    ```
-2. Open **PowerShell as Administrator** and run the setup script:
+2. Open **PowerShell** (Run as Administrator is recommended for PATH changes) and execute:
    ```powershell
    powershell -ExecutionPolicy Bypass -File install.ps1
    ```
-3. Open a **new** terminal window—you're ready to go!
+3. Open a **brand new** terminal window to apply the PATH changes. You are now ready to run `sentinelai`.
 
 ---
 
-## 💻 Usage
+## 💻 Comprehensive Usage Guide
 
-SentinelAI is incredibly versatile. You can use our full-screen interfaces or run quick headless commands.
+SentinelAI is incredibly versatile. It functions as a global CLI tool that can spin up local servers, run interactive dashboards, or execute headless scans.
 
-### 🎮 The Interfaces
+### Interface Launchers
 
 ```bash
 # Launch the Terminal UI (TUI)
 sentinelai
 
-# Launch the Web UI Dashboard in your browser (localhost:8765)
+# Launch the Web Dashboard (Starts FastAPI backend and opens browser to localhost:8765)
 sentinelai --web
 ```
 
-### 🛠️ CLI Power User Commands
+### CLI Auditing Power Commands
 
 ```bash
-# Basic security audit of the current directory
+# Run a standard AI security audit on the current directory
 sentinelai audit .
 
-# Audit with Compliance checks and SBOM generation
-sentinelai audit . --compliance owasp --sbom
+# Run an audit on a specific remote GitHub repository
+sentinelai audit https://github.com/expressjs/express
 
-# Auto-generate Git patches for fixable vulnerabilities
+# Run an audit and verify against HIPAA compliance
+sentinelai audit . --compliance hipaa
+
+# Run an audit and automatically generate a CycloneDX SBOM
+sentinelai audit . --sbom
+
+# Run an audit and auto-generate .patch files for all fixable vulnerabilities
 sentinelai audit . --fix
 
-# CI/CD Mode (outputs JSON and exits with error code if critical vulns found)
+# CI/CD Pipeline Mode: Outputs JSON and throws exit codes on critical failures
 sentinelai audit . --ci
 
-# Interactive mode (drop into chat after the audit completes)
+# Interactive Chat Mode: After the audit finishes, drop into a terminal prompt to ask questions about your code
 sentinelai audit . --interactive
 
-# Export the final report to HTML
-sentinelai audit . --export html
+# Combine flags for a massive enterprise scan!
+sentinelai audit . --compliance owasp --sbom --fix --export html --interactive
+```
 
-# View your historical audits and vulnerability trends
+### History & Tracking
+
+```bash
+# View a summary of all past audits, including timestamps and total vulnerabilities found
 sentinelai history
 ```
 
 ---
 
-## 🔑 API Keys
+## 🔒 Data Privacy & Security
 
-SentinelAI requires a **Gemini API Key** to power its reasoning engine. 
-* **Privacy First**: Your keys and source code are stored **locally**. Code is only sent securely to the LLM provider for analysis and is never stored on our servers.
-* **Setup**: You can add your key via the "Settings" menu in the Web UI, paste it when prompted in the TUI, or pass it via the CLI `--keys` flag.
+We understand that source code is your most valuable asset.
 
----
+- **Local Processing**: All file parsing, chunking, and database operations (ChromaDB, SQLite) happen strictly on your local machine.
+- **LLM Transmission**: Code chunks are sent *only* to the Google Gemini API for semantic analysis. 
+- **No Telemetry**: SentinelAI does not track you, does not phone home, and does not store your code on our servers.
+- **Key Security**: Your Gemini API Key is stored locally in `.sentinel_keys.json`. Our `.gitignore` ensures this file is never accidentally pushed to version control. 
 
-<div align="center">
-  <b>Built for Hackers, By Hackers.</b> <br/>
-  <i>Enterprise-grade security insights without the enterprise price tag.</i>
-</div>
+*(Note: Ensure you read the data processing agreements of your LLM provider regarding API data retention).*
